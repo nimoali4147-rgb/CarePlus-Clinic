@@ -3,63 +3,107 @@ import { HeartPulse } from "lucide-react";
 
 function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/95 backdrop-blur">
-      <nav className="mx-auto flex h-30 bg-gray-100  max-w-7xl items-center justify-between px-6 lg:px-8">
+    <>
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 border-b border-slate-100 bg-gray-100">
+        <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
 
-       
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-600">
-            <HeartPulse className="h-6 w-6 text-white" />
-          </div>
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
+              <HeartPulse className="h-6 w-6 text-white" />
+            </div>
 
-          <div className="leading-tight">
-            <span className="block text-2xl font-bold text-blue-700">CarePlus</span>
-            <span className="block text-md font-medium text-slate-500">Clinic</span>
-          </div>
-        </Link>
-
-       
-        <div className="hidden items-center ml-70 gap-9 md:flex">
-          <Link
-            to="/"
-            className="text-xl font-bold text-slate-700 transition hover:text-blue-700">Home
+            <div className="leading-tight">
+              <span className="block text-xl font-bold text-blue-700">
+                CarePlus
+              </span>
+              <span className="block text-md font-medium text-slate-500">
+                Clinic
+              </span>
+            </div>
           </Link>
 
-          <Link
-            to="/doctors"
-            className="text-xl font-bold text-slate-700 transition hover:text-blue-600">Doctors
-          </Link>
+          {/* Navigation */}
+          <div className="hidden items-center gap-8 md:flex">
 
-          <a
-            href="#services"
-            className="text-xl font-bold text-slate-700 transition hover:text-blue-600">Services
-          </a>
+            <Link
+              to="/"
+              className="text-l font-bold text-sky-700 transition hover:text-blue-600"
+            >
+              Home
+            </Link>
 
-          <a
-            href="#about"
-            className="text-xl font-bold text-slate-700 transition hover:text-blue-600">About Us
-          </a>
+            <Link
+              to="/doctors"
+              className="text-l font-bold  text-sky-700 transition hover:text-blue-600"
+            >
+              Doctors
+            </Link>
 
-          <a
-            href="#contact"
-            className="text-xl font-bold text-slate-700 transition hover:text-blue-600">Contact
-          </a>
-        </div>
+            <a
+              href="#Appointment"
+              className="text-l font-bold text-sky-700 transition hover:text-blue-600"
+            >
+              Appointment
+            </a>
 
-       
-        <div className="flex items-center gap-3">
+            <a
+              href="#about"
+              className="text-l font-bold text-sky-700 transition hover:text-blue-600"
+            >
+              About Us
+            </a>
+
+            <a
+              href="#contact"
+              className="text-l font-bold text-sky-700 transition hover:text-blue-600"
+            >
+              Contact
+            </a>
+
+          </div>
+
+          {/* Login */}
           <Link
             to="/login"
-            className="rounded-lg border border-blue-600 px-5 py-2 text-xl font-bold text-blue-600 transition hover:bg-blue-50">Login
+            className="rounded-md border border-blue-600 px-5 py-2 text-xl font-bold text-blue-600 transition hover:bg-blue-50"
+          >
+            Login
           </Link>
 
-          <Link
-            to="/signup"
-            className="rounded-lg bg-blue-600 px-5 py-2.5 text-xl font-bold text-white shadow-sm transition hover:bg-blue-700">Sign Up
-          </Link>
+        </nav>
+      </header>
+
+      {/* Hero */}
+      <div className="relative ">
+
+    <div className="bg w-170 h-120 ">
+        <img
+          src="../src/assets/image.png"
+          alt="clinic"
+          className="h-120 w-full object-cover ml-143"
+        />
+
+        {/* Text */}
+        <div className="absolute left-10 top-1/2 -translate-y-1/2 max-w-xl">
+      
+          <h1 className="text-5xl font-bold leading-tight mt-6 text-slate-700">Your Health is <br /><span className="text-sky-700">Our Priority</span></h1>
+
+          <p className="mt-5 text-lg mt-6 text-slate-900">
+           Book an appointment with trusted doctors easily  <br />
+           and get the best care for you and your family.  <br />
+           Manage your appointments and stay connected <br /> with your healthcare team anytime.
+          </p>
+
+          <button className="mt-6 rounded-lg  mt-12 bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700">
+            Book an Appointment
+          </button>
         </div>
-      </nav>
-    </header>
+       
+</div>
+      </div>
+    </>
   );
 }
 

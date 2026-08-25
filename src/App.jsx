@@ -1,17 +1,25 @@
-import React from 'react'
-import Navbar from './component/Navbar'
-import { Route, Routes } from 'react-router-dom'
+import { Routes, Route } from "react-router-dom";
+import Navbar from "./component/Navbar";
+import Cards from "./component/Cards";
+import Footer from "./component/Footer";
+import Specialties from "./component/Specialties";
 
 function App() {
   return (
-    <>
-      <Routes>
-        <Route path='/' element={<Navbar />} />
-      </Routes>
-
-    </>
-
-  )
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Cards />
+            <Specialties />
+            <Footer />
+          </>
+        }
+      />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
