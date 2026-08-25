@@ -3,6 +3,7 @@ import Navbar from "./component/Navbar";
 import Cards from "./component/Cards";
 import Footer from "./component/Footer";
 import Specialties from "./component/Specialties";
+import Doctors from "./pages/Doctors";
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
           </>
         }
       />
+
+      <Route path="/doctors" element={<Doctors />} />
     </Routes>
   );
 }

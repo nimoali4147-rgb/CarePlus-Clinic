@@ -80,7 +80,7 @@ function Navbar() {
 
     <div className="bg w-170 h-120 ">
         <img
-          src="../src/assets/image.png"
+          src="../src/assets/photos/image.png"
           alt="clinic"
           className="h-120 w-full object-cover ml-143"
         />
