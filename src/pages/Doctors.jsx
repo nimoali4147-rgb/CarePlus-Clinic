@@ -70,14 +70,13 @@ function Doctors() {
       doctor.specialty.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleBooking = (doctor) => {
-    navigate("/booking", {
-      state: {
-        doctor: doctor.name,
-        specialty: doctor.specialty,
-      },
-    });
-  };
+ const handleBooking = (doctor) => {
+  navigate("/booking", {
+    state: {
+      doctor: doctor,
+    },
+  });
+};
 
   return (
     <>
@@ -117,7 +116,7 @@ function Doctors() {
             </Link>
 
             <Link
-              to="/booking"
+              to="/doctors"
               className="text-l font-bold text-sky-700 transition hover:text-blue-600"
             >
               Appointment
