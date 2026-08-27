@@ -1,14 +1,10 @@
-import { HeartPulse } from "lucide-react";
+
 
 function Footer() {
   return (
-    <footer className="mt-12 border-t border-slate-200 bg-white">
+    <footer className="mt-12 border-t border-slate-200 ml-20 bg-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
 
-        {/* Logo */}
-       
-
-        {/* Links */}
         <div className="hidden items-center gap-6 md:flex">
           <a
             href="#about"
@@ -39,8 +35,8 @@ function Footer() {
           </a>
         </div>
 
-        {/* Copyright */}
-        <p className="text-md font-bold  text-sky-700">
+     
+        <p className="text-md font-bold mr-20 text-sky-700">
           © 2026 CarePlus Clinic
         </p>
 
@@ -48,5 +44,6 @@ function Footer() {
     </footer>
   );
 }
+
 
 export default Footer;

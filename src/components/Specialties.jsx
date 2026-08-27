@@ -16,7 +16,7 @@ function Specialties() {
             Our Services
           </p>
 
-          <h1 className="text-slate-700 text-3xl font-bold mt-2">
+          <h1 className="text-sky-600 text-2xl font-bold mt-2">
             Explore Our Medical Specialties
           </h1>
 

@@ -11,11 +11,11 @@ function Cards() {
       <div className="mx-auto max-w-6xl">
 
         <div className="mb-10 text-center">
-          <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-blue-900">
+          <p className="mb-2 text-xl font-semibold uppercase tracking-wider text-emerald-400">
             Why Choose CarePlus
           </p>
 
-          <h2 className="text-3xl font-bold text-slate-700">
+          <h2 className="text-3xl font-bold text-sky-700">
             Healthcare Made Simple
           </h2>
 

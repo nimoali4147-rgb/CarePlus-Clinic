@@ -6,26 +6,26 @@ import { HeartPulse } from "lucide-react";
 function Doctors() {
   return (
     <>
-    <header className="sticky top-0 z-50 border-b border-slate-100 bg-gray-100">
-        <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6 lg:px-8">
+   
+      <header className="sticky top-0 z-50 border-b border-slate-100 bg-white">
+        <nav className="mx-auto flex h-20 w-full  items-center justify-between px-6 lg:px-8">
 
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-700">
               <HeartPulse className="h-6 w-6 text-white" />
             </div>
 
             <div className="leading-tight">
-              <span className="block text-xl font-bold text-blue-700">
+              <span className="block text-2xl font-bold text-sky-700">
                 CarePlus
               </span>
-              <span className="block text-md font-medium text-slate-500">
+              <span className="block text-l font-medium text-slate-700">
                 Clinic
               </span>
             </div>
-          </Link>
-
         
-          <div className="hidden items-center gap-8 md:flex">
+
+       
+          <div className="hidden items-center ml-90 gap-8 md:flex">
 
             <Link
               to="/"
@@ -41,12 +41,12 @@ function Doctors() {
               Doctors
             </Link>
 
-            <a
-              href="#Appointment"
+            <Link
+              to="/booking"
               className="text-l font-bold text-sky-700 transition hover:text-blue-600"
             >
               Appointment
-            </a>
+            </Link>
 
             <a
               href="#about"
@@ -64,10 +64,10 @@ function Doctors() {
 
           </div>
 
-          
+  
           <Link
             to="/login"
-            className="rounded-md border border-blue-600 px-5 py-2 text-xl font-bold text-blue-600 transition hover:bg-blue-50"
+            className="rounded-md border border-sky-700 px-5 py-2 text-xl font-bold text-sky-700 transition hover:bg-blue-50"
           >
             Login
           </Link>
