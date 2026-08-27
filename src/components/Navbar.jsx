@@ -103,9 +103,11 @@ function Navbar() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <button className="px-6 py-3.5 bg-sky-700 hover:bg-sky-300 text-white font-bold text-xl rounded-xl shadow-md transition-all duration-200">
-                Book Appointment
-              </button>
+              <Link 
+              to="/doctors"
+              className="px-6 py-3.5 bg-sky-700 hover:bg-sky-300 text-white font-bold text-xl rounded-xl shadow-md transition-all duration-200">
+             Find a Doctor
+              </Link>
 
             </div>
           </div>

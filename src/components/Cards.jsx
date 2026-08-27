@@ -11,7 +11,7 @@ function Cards() {
       <div className="mx-auto max-w-6xl">
 
         <div className="mb-10 text-center">
-          <p className="mb-2 text-xl font-semibold uppercase tracking-wider text-emerald-400">
+          <p className="mb-2 text-xl font-semibold uppercase tracking-wider text-emerald-700">
             Why Choose CarePlus
           </p>
 
