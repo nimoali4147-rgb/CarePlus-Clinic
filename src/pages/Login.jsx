@@ -25,7 +25,7 @@ function Login() {
   password
 );
 
-navigate("/dashboard");
+navigate("/booking");
 
       alert("Login successful!");
 
