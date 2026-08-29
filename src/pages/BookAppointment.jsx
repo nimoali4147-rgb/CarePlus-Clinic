@@ -7,7 +7,7 @@ import { db, auth } from "../lib/firebase";
 function BookAppointment() {
   const location = useLocation();
   const navigate = useNavigate();
-  const doctor = location.state?.doctor || null;
+  const doctor = location.state?.doctor;
 
   const [isConfirmed, setIsConfirmed] = useState(false);
 
