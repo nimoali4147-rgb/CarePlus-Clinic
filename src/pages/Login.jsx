@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
 
@@ -10,6 +10,8 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const doctor = location.state?.doctor;
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,7 +27,9 @@ function Login() {
   password
 );
 
-navigate("/booking");
+navigate("/booking", {
+  state: { doctor },
+});
 
       alert("Login successful!");
 
