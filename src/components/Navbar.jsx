@@ -1,8 +1,40 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { HeartPulse } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { HeartPulse, UserRound, LogOut } from "lucide-react";
+import { auth } from "../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 function Navbar() {
+  const [userName, setUserName] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsLoggedIn(true);
+        if (user.email) {
+          const name = user.email.split("@")[0];
+          setUserName(name.charAt(0).toUpperCase() + name.slice(1));
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserName("");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white">
@@ -43,14 +75,44 @@ function Navbar() {
             >
               Appointment
             </Link>
+              <Link
+              to="/login"
+              className="rounded-md border border-sky-700 px-5 py-2 text-base font-bold text-sky-700 transition hover:bg-blue-50"
+            >
+              Login
+            </Link>
+          
           </div>
 
-          <Link
-            to="/login"
-            className="rounded-md border border-sky-700 px-5 py-2 text-base font-bold text-sky-700 transition hover:bg-blue-50"
-          >
-            Login
-          </Link>
+  
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5 bg-sky-50 border border-sky-200 py-1.5 px-3 rounded-full shadow-sm">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-700 text-white font-bold text-sm">
+                  {userName ? userName.charAt(0) : <UserRound className="h-4 w-4" />}
+                </div>
+                <span className="text-sm font-bold text-sky-800 pr-1">
+                  {userName}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                title="Logout"
+                className="flex items-center justify-center h-10 w-10 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 transition"
+              >
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="rounded-md border border-sky-700 px-5 py-2 text-base font-bold text-sky-700 transition hover:bg-blue-50"
+            >
+              Login
+            </Link>
+          )}
         </nav>
       </header>
 

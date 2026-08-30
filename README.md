@@ -1,16 +1,103 @@
-# React + Vite
+# 🏥 CarePlus Clinic Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CarePlus is a modern and responsive healthcare management web application built with React and Tailwind CSS. The system allows patients to find doctors, search by specialty, and book appointments. It also provides a Doctor Dashboard for managing appointments, patients, and schedules.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+### 🌐 Patient Portal
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Home & Landing Page**: Overview of the clinic, services, and easy navigation.
+- **Doctors Directory**: Browse doctors by specialty, experience, and availability.
+- **Search & Filter**: Search doctors by name or specialty and filter by medical specialty.
+- **Appointment Booking**: Select a doctor, date, time, and provide patient details and reason for visit.
+- **Login Before Booking**: Users must log in before accessing the booking form.
+- **Appointment Confirmation**: View appointment details after successfully booking.
 
-## Expanding the ESLint configuration
+### 🩺 Doctor Dashboard
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Secure Authentication**: Firebase Authentication for login and registration.
+- **Dashboard Overview**: View total, pending, confirmed, and cancelled appointments.
+- **Appointment Management**: Confirm, cancel, and delete appointments.
+- **Patient Management**: View and search patients who have booked appointments.
+- **Schedule Management**: Set working days and working hours for the logged-in doctor.
+- **Local Storage**: Appointment and schedule information remains available after refreshing the page.
+
+---
+
+## 📸 Screenshots
+
+### Home Page
+![Home Page](src/assets/home.png)
+
+### Doctors Page
+![Doctors Page](src/assets/doctors.png)
+
+### Login Page
+![Login Page](src/assets/login.png)
+
+### Appointment Booking
+![Booking Page](src/assets/booking.png)
+
+### Doctor Dashboard
+![Doctor Dashboard](src/assets/dashboard.png)
+
+### Patients Page
+![Patients Page](src/assets/patients.png)
+
+### Schedule Page
+![Schedule Page](src/assets/schedule.png)
+
+---
+
+## 🛠️ Technologies Used
+
+- React
+- JavaScript
+- Tailwind CSS
+- Vite
+- React Router
+- Firebase Authentication
+- Firebase Firestore
+- Lucide React
+- Local Storage
+
+---
+
+## 📁 Project Structure
+
+```text
+careplus/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── ui/
+│   │   ├── Cards.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Navbar.jsx
+│   │   └── Specialties.jsx
+│   ├── lib/
+│   │   ├── firebase.js
+│   │   └── utils.js
+│   ├── pages/
+│   │   ├── BookAppointment.jsx
+│   │   ├── DoctorDashboard.jsx
+│   │   ├── Doctors.jsx
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Patients.jsx
+│   │   ├── Schedule.jsx
+│   │   └── SignUp.jsx
+│   ├── App.css
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .env
+├── .gitignore
+├── components.json
+├── LICENSE
+├── package.json
+├── README.md
+└── vite.config.js
