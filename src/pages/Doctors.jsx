@@ -142,7 +142,7 @@ function Doctors() {
               Our Doctors
             </p>
 
-            <h1 className="mt-2 text-3xl font-bold text-blue-950">
+            <h1 className="mt-2 text-3xl font-bold text-sky-800">
               Meet Our Trusted Doctors
             </h1>
 

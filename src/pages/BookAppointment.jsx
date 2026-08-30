@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Calendar, Clock, CheckCircle, ArrowLeft } from "lucide-react";
-import { addDoc, collection } from "firebase/firestore";
-import { db, auth } from "../lib/firebase";
+import { auth } from "../lib/firebase";
 
 function BookAppointment() {
   const location = useLocation();
@@ -31,34 +30,42 @@ function BookAppointment() {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const user = auth.currentUser;
-    if (!user) {
-      alert("Please login before booking an appointment.");
-      navigate("/login", { state: { doctor } });
-      return;
-    }
+  const user = auth.currentUser;
 
-    try {
-      await addDoc(collection(db, "appointments"), {
-        userId: user.uid,
-        doctor: doctor.name,
-        specialty: doctor.specialty,
-        date: formData.date,
-        time: formData.time,
-        reason: formData.reason,
-        patientName: formData.patientName,
-        phone: formData.phone,
-      });
+  if (!user) {
+    alert("Please login before booking an appointment.");
+    navigate("/login", { state: { doctor } });
+    return;
+  }
 
-      setIsConfirmed(true);
-    } catch (error) {
-      console.log(error);
-      alert("Waa la samayn waayay appointment-ka, fadlan dib u try-garay.");
-    }
+  const appointment = {
+    id: Date.now(),
+    userId: user.uid,
+    doctor: doctor.name,
+    specialty: doctor.specialty,
+    date: formData.date,
+    time: formData.time,
+    reason: formData.reason,
+    patientName: formData.patientName,
+    phone: formData.phone,
+    status: "Pending",
   };
+
+  const oldAppointments =
+    JSON.parse(localStorage.getItem("appointments")) || [];
+
+  const newAppointments = [...oldAppointments, appointment];
+
+  localStorage.setItem(
+    "appointments",
+    JSON.stringify(newAppointments)
+  );
+
+  setIsConfirmed(true);
+};
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">

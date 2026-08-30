@@ -29,7 +29,7 @@ function Login() {
         navigate("/booking", { state: { doctor } });
       }
     } catch (err) {
-      setError("Email or Password is wrong");
+      setError("Wrong Email or Password");
     } finally {
       setLoading(false);
     }

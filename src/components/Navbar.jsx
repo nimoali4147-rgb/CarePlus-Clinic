@@ -38,7 +38,7 @@ function Navbar() {
             </Link>
 
             <Link
-              to="/booking"
+              to="/doctors"
               className="text-base font-bold text-sky-700 transition hover:text-blue-600"
             >
               Appointment
