@@ -2,7 +2,6 @@
 
 CarePlus is a modern and responsive healthcare management web application built with React and Tailwind CSS. The system allows patients to find doctors, search by specialty, and book appointments. It also provides a Doctor Dashboard for managing appointments, patients, and schedules.
 
----
 
 ## ✨ Features
 
@@ -24,20 +23,19 @@ CarePlus is a modern and responsive healthcare management web application built 
 - **Schedule Management**: Set working days and working hours for the logged-in doctor.
 - **Local Storage**: Appointment and schedule information remains available after refreshing the page.
 
----
 
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](src/assets/photos/scr.png)
+![Home Page](./src/assets/photos/scr.png)
 
 ### Doctors Page
-![Doctors Page](src/assets/photos/do.png)
+![Doctors Page](./src/assets/photos/do.png)
 
 ### Schedule Page
-![Schedule Page](src/assets/photos/sc.png)
+![Schedule Page](./src/assets/photos/sc.png)
 
----
+
 
 ## 🛠️ Technologies Used
 
@@ -51,11 +49,9 @@ CarePlus is a modern and responsive healthcare management web application built 
 - Lucide React
 - Local Storage
 
----
 
 ## 📁 Project Structure
 
-```text
 careplus/
 ├── public/
 ├── src/

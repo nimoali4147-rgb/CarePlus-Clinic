@@ -108,7 +108,7 @@ function Doctors() {
             </div>
           </div>
 
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center ml-130 gap-8 md:flex">
             <Link to="/" className="text-l font-bold text-sky-700 transition hover:text-blue-600">
               Home
             </Link>
@@ -118,12 +118,7 @@ function Doctors() {
             <Link to="/doctors" className="text-l font-bold text-sky-700 transition hover:text-blue-600">
               Appointment
             </Link>
-            <Link to="/about" className="text-l font-bold text-sky-700 transition hover:text-blue-600">
-              About Us
-            </Link>
-            <Link to="/contact" className="text-l font-bold text-sky-700 transition hover:text-blue-600">
-              Contact
-            </Link>
+
           </div>
 
           <Link
