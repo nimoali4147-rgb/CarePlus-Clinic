@@ -29,25 +29,13 @@ CarePlus is a modern and responsive healthcare management web application built 
 ## 📸 Screenshots
 
 ### Home Page
-![Home Page](src/assets/home.png)
+![Home Page](src/assets/photos/scr.png)
 
 ### Doctors Page
-![Doctors Page](src/assets/doctors.png)
-
-### Login Page
-![Login Page](src/assets/login.png)
-
-### Appointment Booking
-![Booking Page](src/assets/booking.png)
-
-### Doctor Dashboard
-![Doctor Dashboard](src/assets/dashboard.png)
-
-### Patients Page
-![Patients Page](src/assets/patients.png)
+![Doctors Page](src/assets/photos/do.png)
 
 ### Schedule Page
-![Schedule Page](src/assets/schedule.png)
+![Schedule Page](src/assets/photos/sc.png)
 
 ---
 
