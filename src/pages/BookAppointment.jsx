@@ -7,7 +7,12 @@ import { db, auth } from "../lib/firebase";
 function BookAppointment() {
   const location = useLocation();
   const navigate = useNavigate();
-  const doctor = location.state?.doctor;
+
+  const doctor = location.state?.doctor || {
+    name: "Doctor",
+    specialty: "General",
+    image: ""
+  };
 
   const [isConfirmed, setIsConfirmed] = useState(false);
 
@@ -20,42 +25,40 @@ function BookAppointment() {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
     setFormData({
       ...formData,
-      [name]: value,
+      [e.target.name]: e.target.value,
     });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const user = auth.currentUser;
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login before booking an appointment.");
+      navigate("/login", { state: { doctor } });
+      return;
+    }
 
-  if (!user) {
-    alert("Please login before booking an appointment.");
-    return;
-  }
+    try {
+      await addDoc(collection(db, "appointments"), {
+        userId: user.uid,
+        doctor: doctor.name,
+        specialty: doctor.specialty,
+        date: formData.date,
+        time: formData.time,
+        reason: formData.reason,
+        patientName: formData.patientName,
+        phone: formData.phone,
+      });
 
-  try {
-    await addDoc(collection(db, "appointments"), {
-      userId: user.uid,
-      doctor: doctor.name,
-      specialty: doctor.specialty,
-      date: formData.date,
-      time: formData.time,
-      reason: formData.reason,
-      patientName: formData.patientName,
-      phone: formData.phone,
-    });
-
-    setIsConfirmed(true);
-  } catch (error) {
-    console.error("Error booking appointment:", error);
-    alert("Failed to book appointment. Please try again.");
-  }
-};
+      setIsConfirmed(true);
+    } catch (error) {
+      console.log(error);
+      alert("Waa la samayn waayay appointment-ka, fadlan dib u try-garay.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
@@ -73,7 +76,7 @@ function BookAppointment() {
 
           <div className="mt-10 rounded-2xl bg-white p-8 shadow-lg">
             <div className="mb-7 rounded-xl bg-blue-50 p-5">
-              <p className="mb-3 text-l font-medium text-gray-700">
+              <p className="mb-3 text-sm font-medium text-gray-700">
                 Selected Doctor
               </p>
 
@@ -89,7 +92,7 @@ function BookAppointment() {
                     {doctor.name}
                   </h2>
 
-                  <p className="text-l text-gray-500">
+                  <p className="text-sm text-gray-500">
                     {doctor.specialty}
                   </p>
                 </div>
@@ -98,7 +101,7 @@ function BookAppointment() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="mb-2 block text-l font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Select Date
                 </label>
 
@@ -109,18 +112,18 @@ function BookAppointment() {
                     value={formData.date}
                     onChange={handleChange}
                     required
-                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-l outline-none focus:border-sky-700"
+                    className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-sky-700"
                   />
 
                   <Calendar
                     size={18}
-                    className="pointer-events-none absolute right-3 top-3 text-gray-400"
+                    className="pointer-events-none absolute right-3 top-3.5 text-gray-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-2 block text-l font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Select Time
                 </label>
 
@@ -129,7 +132,7 @@ function BookAppointment() {
                   value={formData.time}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-l outline-none focus:border-sky-700"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-sky-700"
                 >
                   <option value="">Select a time</option>
                   <option value="09:00 AM">09:00 AM</option>
@@ -142,7 +145,7 @@ function BookAppointment() {
               </div>
 
               <div>
-                <label className="mb-2 block text-l font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Reason for Visit
                 </label>
 
@@ -153,12 +156,12 @@ function BookAppointment() {
                   onChange={handleChange}
                   placeholder="Regular Checkup"
                   required
-                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-l outline-none focus:border-sky-700"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-sky-700"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-l font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Patient Name
                 </label>
 
@@ -169,12 +172,12 @@ function BookAppointment() {
                   onChange={handleChange}
                   placeholder="Enter patient name"
                   required
-                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-sky-700"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-l font-medium text-gray-700">
+                <label className="mb-2 block text-sm font-medium text-gray-700">
                   Phone Number
                 </label>
 
@@ -185,13 +188,13 @@ function BookAppointment() {
                   onChange={handleChange}
                   placeholder="+254 700 123 456"
                   required
-                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-l outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-sky-700"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full rounded-lg bg-sky-700 py-3 font-medium text-white transition hover:bg-blue-700"
+                className="w-full rounded-lg bg-sky-700 py-3 font-semibold text-white transition hover:bg-sky-800"
               >
                 Confirm Appointment
               </button>
@@ -203,14 +206,14 @@ function BookAppointment() {
           <div className="rounded-2xl bg-white p-8 shadow-lg">
             <div className="text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                <CheckCircle size={36} className="text-sky-700" />
+                <CheckCircle size={36} className="text-green-600" />
               </div>
 
               <h1 className="mt-5 text-2xl font-bold text-sky-700">
                 Appointment Confirmed!
               </h1>
 
-              <p className="mt-2 text-md font-semibold text-gray-700">
+              <p className="mt-2 text-sm font-semibold text-gray-700">
                 Your appointment has been successfully booked.
               </p>
             </div>
@@ -232,18 +235,18 @@ function BookAppointment() {
                     {doctor.name}
                   </h3>
 
-                  <p className="text-l text-gray-700">
+                  <p className="text-sm text-gray-700">
                     {doctor.specialty}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 space-y-5">
+              <div className="mt-6 space-y-4">
                 <div className="flex gap-3">
                   <Calendar size={20} className="text-sky-700" />
 
                   <div>
-                    <p className="text-l text-gray-700">Date</p>
+                    <p className="text-xs text-gray-500">Date</p>
                     <p className="font-medium text-gray-900">
                       {formData.date}
                     </p>
@@ -251,10 +254,10 @@ function BookAppointment() {
                 </div>
 
                 <div className="flex gap-3">
-                  <Clock size={20} className="text-blue-600" />
+                  <Clock size={20} className="text-sky-700" />
 
                   <div>
-                    <p className="text-l text-gray-700">Time</p>
+                    <p className="text-xs text-gray-500">Time</p>
                     <p className="font-medium text-gray-900">
                       {formData.time}
                     </p>
@@ -262,21 +265,21 @@ function BookAppointment() {
                 </div>
 
                 <div>
-                  <p className="text-l text-gray-700">Reason for Visit</p>
+                  <p className="text-xs text-gray-500">Reason for Visit</p>
                   <p className="font-medium text-gray-900">
                     {formData.reason}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-l text-gray-700">Patient</p>
+                  <p className="text-xs text-gray-500">Patient</p>
                   <p className="font-medium text-gray-900">
                     {formData.patientName}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-l text-gray-700">Phone</p>
+                  <p className="text-xs text-gray-500">Phone</p>
                   <p className="font-medium text-gray-900">
                     {formData.phone}
                   </p>
@@ -286,7 +289,7 @@ function BookAppointment() {
 
             <button
               onClick={() => navigate("/")}
-              className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-sky-700 py-3 font-bold text-xl text-white transition hover:bg-sky-500"
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-sky-700 py-3 font-semibold text-white transition hover:bg-sky-800"
             >
               <ArrowLeft size={18} />
               Back to Home

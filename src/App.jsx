@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import BookAppointment from "./pages/BookAppointment";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import DoctorDashboard from "./pages/DoctorDashbord";
 
 
 function App() {
@@ -14,9 +15,9 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
        <Route path="/booking" element={<BookAppointment />} />
-     
-    
-    </Routes>
+       <Route path="/dashbord" element={<DoctorDashboard />} />
+
+     </Routes>
   );
 }
 

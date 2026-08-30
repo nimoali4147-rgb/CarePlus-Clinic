@@ -1,116 +1,137 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../lib/firebase";
-
+import { HeartPulse } from "lucide-react";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [role, setRole] = useState("User");
+
   const navigate = useNavigate();
   const location = useLocation();
   const doctor = location.state?.doctor;
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     setError("");
 
     try {
       setLoading(true);
+      await signInWithEmailAndPassword(auth, email, password);
 
-     await signInWithEmailAndPassword(
-  auth,
-  email,
-  password
-);
-
-navigate("/booking", {
-  state: { doctor },
-});
-
-      alert("Login successful!");
-
-      console.log("Logged in user:", auth.currentUser);
-
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
+      if (role === "Doctor" || role === "Admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/booking", { state: { doctor } });
+      }
+    } catch (err) {
+      setError("Email or Password is wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl md:flex">
+        
+        <div className="hidden md:flex md:w-1/2 flex-col justify-center bg-sky-700 p-12 text-white">
+          <div className="flex items-center">
+            <HeartPulse className="text-white h-10 w-10" />
+            <h1 className="text-3xl font-bold ml-4">CarePlus</h1>
+          </div>
 
-      <div className="w-full max-w-md rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+          <h2 className="mt-10 text-4xl font-bold leading-tight">
+            Your Health, <br /> Our Priority
+          </h2>
 
-        <h1 className="text-2xl font-semibold text-gray-900 dark:text-white">
-           Login
-        </h1>
-
-        {error && (
-          <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-950 dark:text-red-400">
-            {error}
+          <p className="mt-5 max-w-md text-sky-100">
+            Connect with trusted doctors and manage your healthcare appointments easily with CarePlus.
           </p>
-        )}
 
-        <form onSubmit={handleLogin} className="space-y-4">
+          <div className="mt-10 rounded-xl bg-white/10 p-5">
+            <p className="font-medium">Quality healthcare made simple.</p>
+            <p className="mt-2 text-sm text-sky-100">
+              Book appointments, find doctors and take control of your healthcare journey.
+            </p>
+          </div>
+        </div>
 
-          {/* Email */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-              Email
-            </label>
-
-            <input
-              type="email"
-              placeholder="testfinance@gmail.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:ring-2 focus:ring-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
+        <div className="w-full p-8 md:w-1/2 md:p-12">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-sky-700">Welcome Back</h1>
+            <p className="mt-2 text-gray-500">Sign in to continue to your CarePlus account.</p>
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
-              Password
-            </label>
+          {error && (
+            <p className="mb-5 rounded-lg bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </p>
+          )}
 
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 outline-none focus:ring-2 focus:ring-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-            />
-          </div>
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-sky-700">Email</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-sky-600 focus:ring-0"
+              />
+            </div>
 
-          {/* Login */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-gray-900 px-4 py-2.5 font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
-          >
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-sky-700">Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-sky-600 focus:ring-0"
+              />
+            </div>
 
-            </form>
-              <p className="mt-4 text-center text-sm text-gray-600">
-                 Don't have an account?{" "}
-                <a
-                 href="/signup"
-                 className="font-medium text-blue-600 hover:underline"
-                >
-                 Sign Up
-                </a>
-              </p>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-sky-700">Login As</label>
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-sky-600 focus:ring-0"
+              >
+                <option value="User">User</option>
+                <option value="Doctor">Admin</option>
+              </select>
+            </div>
+
+            <div className="text-right">
+              <button type="button" className="text-sm font-medium text-sky-700 hover:underline">
+                Forgot password?
+              </button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-sky-700 px-4 py-3 font-semibold text-white hover:bg-sky-800 disabled:opacity-50"
+            >
+              {loading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <p className="mt-6 text-center text-sm text-gray-600">
+            Don't have an account?{" "}
+            <Link to="/signup" state={{ doctor }} className="font-semibold text-sky-700 hover:underline">
+              Sign Up
+            </Link>
+          </p>
+        </div>
 
       </div>
     </div>
