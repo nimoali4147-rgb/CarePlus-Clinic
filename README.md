@@ -51,7 +51,7 @@ CarePlus is a modern and responsive healthcare management web application built 
 
 
 ## 📁 Project Structure
-
+```text
 careplus/
 ├── public/
 ├── src/
