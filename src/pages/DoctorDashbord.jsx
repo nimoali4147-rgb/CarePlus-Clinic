@@ -2,393 +2,323 @@ import React, { useState, useEffect } from "react";
 import { auth } from "../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { Link } from "react-router-dom";
-import { UserRound, HeartPulse } from "lucide-react";
-
+import { 
+  UserRound, 
+  HeartPulse, 
+  Calendar, 
+  Clock, 
+  CheckCircle2, 
+  XCircle, 
+  Trash2, 
+  LayoutDashboard, 
+  CalendarCheck, 
+  User, 
+  LogOut,
+  UserPlus,
+  CheckCheck,
+  CalendarDays
+} from "lucide-react";
 
 function DoctorDashboard() {
     const [appointments, setAppointments] = useState([]);
     const [doctorName, setDoctorName] = useState("");
 
-   
+    const todayStr = new Date().toISOString().split("T")[0];
 
-useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user?.email) {
-            const name = user.email.split("@")[0];
+    useEffect(() => {
+        const unsub = onAuthStateChanged(auth, (usr) => {
+            if (usr?.email) {
+                const name = usr.email.split("@")[0];
+                setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+            }
+        });
+        return () => unsub();
+    }, []);
 
-            setDoctorName(
-                name.charAt(0).toUpperCase() + name.slice(1)
-            );
-        }
-    });
+    useEffect(() => {
+        const data = JSON.parse(localStorage.getItem("appointments")) || [];
+        setAppointments(data);
+    }, []);
 
-    return () => unsubscribe();
-}, []);
+    const updateStatus = (id, newStatus) => {
+        const list = JSON.parse(localStorage.getItem("appointments")) || [];
+        const updated = list.map((item) =>
+            item.id === id ? { ...item, status: newStatus } : item
+        );
+        localStorage.setItem("appointments", JSON.stringify(updated));
+        setAppointments(updated);
+    };
 
-useEffect(() => {
-    const savedAppointments =
-        JSON.parse(localStorage.getItem("appointments")) || [];
+    const handleDelete = (id) => {
+        const list = JSON.parse(localStorage.getItem("appointments")) || [];
+        const updated = list.filter((item) => item.id !== id);
+        localStorage.setItem("appointments", JSON.stringify(updated));
+        setAppointments(updated);
+    };
 
-    setAppointments(savedAppointments);
-}, []);
-const handleConfirm = (id) => {
-  const appointments =
-    JSON.parse(localStorage.getItem("appointments")) || [];
+    const todayCount = appointments.filter((item) => item.date === todayStr).length;
+    const newReqCount = appointments.filter((item) => item.status === "Pending" || item.status === "New Request").length;
+    const completedCount = appointments.filter((item) => item.status === "Completed").length;
+    const confirmedCount = appointments.filter((item) => item.status === "Confirmed").length;
 
-  const updatedAppointments = appointments.map((item) =>
-    item.id === id
-      ? { ...item, status: "Confirmed" }
-      : item
-  );
+    return (
+        <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
+            <aside className="w-64 bg-sky-800  border-r border-slate-200 p-6 flex flex-col justify-between">
+                <div>
+                    <div className="flex items-center gap-3 mb-8 px-2">
+                        <div className="p-2 bg-sky-100 rounded-xl">
+                            <HeartPulse className="h-6 w-6 text-sky-600" />
+                        </div>
+                        <h1 className="text-xl font-bold text-white tracking-tight">
+                            CarePlus
+                        </h1>
+                    </div>
 
-  localStorage.setItem(
-    "appointments",
-    JSON.stringify(updatedAppointments)
-  );
-
-  setAppointments(updatedAppointments);
-};
-
-const handleCancel = (id) => {
-  const appointments =
-    JSON.parse(localStorage.getItem("appointments")) || [];
-
-  const updatedAppointments = appointments.map((item) =>
-    item.id === id
-      ? { ...item, status: "Cancelled" }
-      : item
-  );
-
-  localStorage.setItem(
-    "appointments",
-    JSON.stringify(updatedAppointments)
-  );
-
-  setAppointments(updatedAppointments);
-};
-const handleDelete = (id) => {
-    const appointments =
-        JSON.parse(localStorage.getItem("appointments")) || [];
-
-    const updatedAppointments = appointments.filter(
-        (item) => item.id !== id
-    );
-
-    localStorage.setItem(
-        "appointments",
-        JSON.stringify(updatedAppointments)
-    );
-
-    setAppointments(updatedAppointments);
-};
-
-    // Appointment counts
-    const pendingCount = appointments.filter(
-        (item) => item.status === "Pending"
-    ).length;
-
-    const confirmedCount = appointments.filter(
-        (item) => item.status === "Confirmed"
-    ).length;
-
-    const cancelledCount = appointments.filter(
-        (item) => item.status === "Cancelled"
-    ).length;
-
-  return (
-    <div className="flex min-h-screen bg-slate-100 font-sans">
-
-        {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-slate-200 p-6">
-
-            <div className="flex items-center gap-2 mb-10">
-                <HeartPulse className="h-8 w-8 text-sky-700" />
-
-                <h1 className="text-2xl font-bold text-sky-700">
-                    CarePlus
-                </h1>
-            </div>
-
-            <nav>
-                <ul className="space-y-3 font-semibold text-sky-700">
-
-                    <li className="rounded-xl bg-sky-700 px-4 py-3 text-white">
-                        Dashboard
-                    </li>
-
-                    <li className="rounded-xl px-4 py-3 hover:bg-sky-50 cursor-pointer">
-                        <Link to="/appointments" className="block">
-                            Appointments
-                        </Link>
-                    </li>
-
-                    <li className="rounded-xl px-4 py-3 hover:bg-sky-50 cursor-pointer">
-                        <Link to="/patients" className="block">
-                            Patients
-                        </Link>
-                    </li>
-
-                    <li className="rounded-xl px-4 py-3 hover:bg-sky-50 cursor-pointer">
-                        <Link to="/profile" className="block">
-                            Profile
-                        </Link>
-                    </li>
-
-                    <li className="mt-10 rounded-xl px-4 py-3 text-red-600 hover:bg-red-50 cursor-pointer">
-                        <Link to="/" className="block">
-                            Logout
-                        </Link>
-                    </li>
-
-                </ul>
-            </nav>
-        </aside>
-
-
-        {/* Main Content */}
-        <main className="flex-1 p-8">
-
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+                    <nav>
+                        <ul className="space-y-1 font-medium">
+                            <li>
+                                <Link to="/dashboard" className="flex items-center gap-3 rounded-xl bg-slate-100 px-4 py-3 text-sky-700 shadow-l shadow-sky-200 transition">
+                                    <LayoutDashboard className="h-5 w-5" />
+                                    <span>Dashboard</span>
+                                </Link>
+                            </li>
+                    
+                            <li>
+                                <Link to="/schedule" className="flex items-center gap-3 rounded-xl px-4 py-3 text-white">
+                                    <Clock className="h-5 w-5" />
+                                    <span>Schedule</span>
+                                </Link>
+                            </li>
+                        
+                        </ul>
+                    </nav>
+                </div>
 
                 <div>
-                    <p className="text-sm font-medium text-slate-500">
-                        Doctor Dashboard
-                    </p>
-
-                    <h1 className="mt-1 text-3xl font-bold text-sky-800">
-                        Welcome back, {doctorName}! 👋
-                    </h1>
+                    <Link to="/" className="flex items-center gap-3 rounded-xl px-4 py-3 text-white">
+                        <LogOut className="h-5 w-5" />
+                        <span>Logout</span>
+                    </Link>
                 </div>
+            </aside>
 
-                <div className="flex items-center gap-3">
-
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-sky-100">
-                        <UserRound className="h-6 w-6 text-sky-700" />
+            <main className="flex-1 p-8">
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                    
+                        <h1 className="mt-1 text-2xl font-bold text-sky-700">
+                            Welcome back, Dr. {doctorName || "Doctor"}! 👋
+                        </h1>
                     </div>
 
-                    <div>
-                        <p className="font-bold text-sky-800">
-                            {doctorName}
-                        </p>
+                    <div className="flex items-center gap-3 bg-white p-2 pr-4 rounded-full border border-slate-200 shadow-sm">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-sky-700 font-bold">
+                            {doctorName ? doctorName.charAt(0) : <UserRound className="h-5 w-5" />}
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-sky-800 leading-none">
+                                Dr. {doctorName}
+                            </p>
+                            <p className="text-xs text-sky-700 mt-1">
+                                Medical Specialist
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
-                        <p className="text-sm text-slate-500">
-                            Doctor
-                        </p>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+                    <div className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-bold text-sky-700 uppercase tracking-wider">
+                                Today's Appointments
+                            </p>
+                            <h2 className="mt-2 text-3xl font-extrabold text-sky-700">
+                                {todayCount}
+                            </h2>
+                        </div>
+                        <div className="p-3 bg-sky-50 rounded-xl text-sky-600">
+                            <CalendarDays className="h-6 w-6" />
+                        </div>
                     </div>
 
-                </div>
-            </div>
+                    <div className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p className="text-xs font-bold text-amber-800 uppercase tracking-wider">
+                                New Patient Requests
+                            </p>
+                            <h2 className="mt-2 text-3xl font-extrabold text-amber-800">
+                                {newReqCount}
+                            </h2>
+                        </div>
+                        <div className="p-3 bg-amber-50 rounded-xl text-amber-800">
+                            <UserPlus className="h-6 w-6" />
+                        </div>
+                    </div>
 
+                    <div className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p className="text-xs font-bold text-sky-700 uppercase tracking-wider">
+                                Confirmed
+                            </p>
+                            <h2 className="mt-2 text-3xl font-extrabold text-sky-700">
+                                {confirmedCount}
+                            </h2>
+                        </div>
+                        <div className="p-3 bg-blue-50 rounded-xl text-sky-700">
+                            <CheckCircle2 className="h-6 w-6" />
+                        </div>
+                    </div>
 
-            {/* Statistics */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-
-                <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
-                    <p className="text-sm font-medium text-slate-500">
-                        Total Appointments
-                    </p>
-
-                    <h2 className="mt-3 text-3xl font-bold text-sky-700">
-                        {appointments.length}
-                    </h2>
-                </div>
-
-
-                <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
-                    <p className="text-sm font-medium text-slate-500">
-                        Pending
-                    </p>
-
-                    <h2 className="mt-3 text-3xl font-bold text-amber-500">
-                        {pendingCount}
-                    </h2>
-                </div>
-
-
-                <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
-                    <p className="text-sm font-medium text-slate-500">
-                        Confirmed
-                    </p>
-
-                    <h2 className="mt-3 text-3xl font-bold text-emerald-600">
-                        {confirmedCount}
-                    </h2>
-                </div>
-
-
-                <div className="rounded-2xl bg-white border border-slate-200 p-6 shadow-sm">
-                    <p className="text-sm font-medium text-slate-500">
-                        Cancelled
-                    </p>
-
-                    <h2 className="mt-3 text-3xl font-bold text-red-500">
-                        {cancelledCount}
-                    </h2>
+                    <div className="rounded-2xl bg-white border border-slate-200/80 p-5 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wider">
+                                Completed Patients
+                            </p>
+                            <h2 className="mt-2 text-3xl font-extrabold text-emerald-700">
+                                {completedCount}
+                            </h2>
+                        </div>
+                        <div className="p-3 bg-emerald-50 rounded-xl text-emerald-700">
+                            <CheckCheck className="h-6 w-6" />
+                        </div>
+                    </div>
                 </div>
 
-            </div>
-
-
-            {/* Appointments */}
-            <div className="rounded-2xl bg-white border border-slate-200 shadow-sm">
-
-                {/* Section Header */}
-                <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-
-                    <div>
-                        <h2 className="text-xl font-bold text-sky-800">
-                            Appointments
+                <div className="rounded-2xl bg-white border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+                        <h2 className="text-lg font-bold text-sky-7000">
+                            Appointment Management
                         </h2>
-                    </div>
-
-                    <div className="rounded-full bg-sky-50 px-4 py-2">
-                        <span className="text-sm font-semibold text-sky-700">
-                            {appointments.length} Appointments
+                        <span className="text-xs font-semibold bg-sky-50 text-sky-700 px-3 py-1.5 rounded-full border border-sky-100">
+                            {appointments.length} Total Bookings
                         </span>
                     </div>
 
-                </div>
-
-
-                {/* Table */}
-                <div className="overflow-x-auto p-6">
-
-                    <table className="w-full text-left">
-
-                        <thead>
-                            <tr className="bg-slate-100 text-sky-700">
-
-                                <th className="rounded-l-xl px-5 py-4 text-sm font-bold">
-                                    Date
-                                </th>
-
-                                <th className="px-5 py-4 text-sm font-bold">
-                                    Time
-                                </th>
-
-                                <th className="px-5 py-4 text-sm font-bold">
-                                    Patient
-                                </th>
-
-                                <th className="px-5 py-4 text-sm font-bold">
-                                    Reason
-                                </th>
-
-                                <th className="px-5 py-4 text-sm font-bold">
-                                    Status
-                                </th>
-
-                                <th className="rounded-r-xl px-5 py-4 text-sm font-bold">
-                                    Action
-                                </th>
-
-                            </tr>
-                        </thead>
-
-
-                        <tbody>
-
-                            {appointments.map((item) => (
-
-                                <tr
-                                    key={item.id}
-                                    className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition"
-                                >
-
-                                    <td className="px-5 py-5 text-sm text-slate-700 whitespace-nowrap">
-                                        {item.date}
-                                    </td>
-
-
-                                    <td className="px-5 py-5 text-sm text-slate-700 whitespace-nowrap">
-                                        {item.time}
-                                    </td>
-
-
-                                    <td className="px-5 py-5 text-sm font-bold text-slate-900">
-                                        {item.patientName || item.patient}
-                                    </td>
-
-
-                                    <td className="px-5 py-5 text-sm text-slate-700">
-                                        {item.reason}
-                                    </td>
-
-
-                                    <td className="px-5 py-5">
-
-                                        <span
-                                            className={`inline-flex rounded-full px-3 py-1.5 text-xs font-bold
-                                            ${
-                                                item.status === "Confirmed"
-                                                    ? "bg-emerald-100 text-emerald-700"
-                                                    : item.status === "Cancelled"
-                                                    ? "bg-red-100 text-red-700"
-                                                    : "bg-amber-100 text-amber-700"
-                                            }`}
-                                        >
-                                            {item.status}
-                                        </span>
-
-                                    </td>
-
-
-                                    <td className="px-5 py-5">
-
-                                        <div className="flex items-center gap-2 whitespace-nowrap">
-
-                                            {item.status === "Pending" && (
-                                                <>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleConfirm(item.id)
-                                                        }
-                                                        className="rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white hover:bg-sky-800 transition"
-                                                    >
-                                                        Confirm
-                                                    </button>
-
-                                                    <button
-                                                        onClick={() =>
-                                                            handleCancel(item.id)
-                                                        }
-                                                        className="rounded-lg bg-red-50 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-100 transition"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </>
-                                            )}
-
-                                            <button
-                                                onClick={() =>
-                                                    handleDelete(item.id)
-                                                }
-                                                className="rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 transition"
-                                            >
-                                                Delete
-                                            </button>
-
-                                        </div>
-
-                                    </td>
-
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/50 border-b border-slate-100 text-slate-500 text-xs uppercase font-semibold">
+                                    <th className="px-6 py-4">Date & Time</th>
+                                    <th className="px-6 py-4">Patient</th>
+                                    <th className="px-6 py-4">Reason</th>
+                                    <th className="px-6 py-4">Status</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
+                            </thead>
 
-                            ))}
+                            <tbody className="divide-y divide-slate-100 text-sm">
+                                {appointments.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="5" className="text-center py-12 text-slate-400">
+                                            No patient appointments available.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    appointments.map((item) => {
+                                        const isToday = item.date === todayStr;
 
-                        </tbody>
+                                        return (
+                                            <tr key={item.id} className="hover:bg-slate-50/80 transition-colors">
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center gap-2 text-slate-700 font-medium">
+                                                        <Calendar className="h-4 w-4 text-slate-400" />
+                                                        {item.date}
+                                                        {isToday && (
+                                                            <span className="text-[10px] uppercase font-extrabold bg-sky-100 text-sky-700 px-2 py-0.5 rounded-md">
+                                                                Today
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div className="text-xs text-slate-400 mt-0.5 ml-6">
+                                                        {item.time}
+                                                    </div>
+                                                </td>
 
-                    </table>
+                                                <td className="px-6 py-4 font-semibold text-slate-900 whitespace-nowrap">
+                                                    {item.patientName || item.patient || "Unknown Patient"}
+                                                </td>
 
+                                                <td className="px-6 py-4 text-slate-600 max-w-xs truncate">
+                                                    {item.reason || "N/A"}
+                                                </td>
+
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+                                                            item.status === "Completed"
+                                                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                                                : item.status === "Confirmed"
+                                                                ? "bg-blue-50 text-blue-700 border border-blue-200"
+                                                                : item.status === "Cancelled"
+                                                                ? "bg-rose-50 text-rose-700 border border-rose-200"
+                                                                : "bg-amber-50 text-amber-700 border border-amber-200"
+                                                        }`}
+                                                    >
+                                                        <span className={`h-1.5 w-1.5 rounded-full ${
+                                                            item.status === "Completed"
+                                                                ? "bg-emerald-500"
+                                                                : item.status === "Confirmed" 
+                                                                ? "bg-blue-500" 
+                                                                : item.status === "Cancelled" 
+                                                                ? "bg-rose-500" 
+                                                                : "bg-amber-500"
+                                                        }`} />
+                                                        {item.status}
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        {(item.status === "Pending" || item.status === "New Request") && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => updateStatus(item.id, "Confirmed")}
+                                                                    className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-100 transition"
+                                                                >
+                                                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                                                    Confirm
+                                                                </button>
+
+                                                                <button
+                                                                    onClick={() => updateStatus(item.id, "Cancelled")}
+                                                                    className="inline-flex items-center gap-1 rounded-lg bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-100 transition"
+                                                                >
+                                                                    <XCircle className="h-3.5 w-3.5" />
+                                                                    Cancel
+                                                                </button>
+                                                            </>
+                                                        )}
+
+                                                        {item.status === "Confirmed" && (
+                                                            <button
+                                                                onClick={() => updateStatus(item.id, "Completed")}
+                                                                className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 transition"
+                                                            >
+                                                                <CheckCheck className="h-3.5 w-3.5" />
+                                                                Complete
+                                                            </button>
+                                                        )}
+
+                                                        <button
+                                                            onClick={() => handleDelete(item.id)}
+                                                            className="inline-flex items-center p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                                                            title="Delete appointment"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-            </div>
-
-        </main>
-
-    </div>
-);
+            </main>
+        </div>
+    );
 }
 
 export default DoctorDashboard;

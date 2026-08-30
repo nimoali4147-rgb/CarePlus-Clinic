@@ -22,7 +22,7 @@ function Navbar() {
             </div>
           </div>
 
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-8 ml-90 md:flex">
             <Link
               to="/"
               className="text-base font-bold text-sky-700 transition hover:text-blue-600"
@@ -42,20 +42,6 @@ function Navbar() {
               className="text-base font-bold text-sky-700 transition hover:text-blue-600"
             >
               Appointment
-            </Link>
-
-            <Link
-              to="/about"
-              className="text-base font-bold text-sky-700 transition hover:text-blue-600"
-            >
-              About Us
-            </Link>
-
-            <Link
-              to="/contact"
-              className="text-base font-bold text-sky-700 transition hover:text-blue-600"
-            >
-              Contact
             </Link>
           </div>
 
