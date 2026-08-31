@@ -12,11 +12,11 @@ function Specialties() {
       <div className="max-w-6xl mx-auto">
 
         <div className="text-center mb-8">
-          <p className="text-blue-900 text-xl font-bold uppercase">
+          <p className="text-sky-800 text-xl font-bold uppercase">
             Our Services
           </p>
 
-          <h1 className="text-sky-600 text-2xl font-bold mt-2">
+          <h1 className="text-sky-700 text-2xl font-bold mt-2">
             Explore Our Medical Specialties
           </h1>
 

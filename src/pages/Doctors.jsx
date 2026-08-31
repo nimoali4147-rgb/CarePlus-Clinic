@@ -1,7 +1,8 @@
 import { Search, UserRound, Headset, HeartPulse } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react"; 
-import { auth } from "../lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../lib/firebase";
 
 function Doctors() {
   const navigate = useNavigate();
@@ -79,16 +80,26 @@ function Doctors() {
     return matchesSearch && matchesSpecialty;
   });
 
-  const handleBooking = (doctor) => { 
-    const user = auth.currentUser;
+const handleBooking = async (doctor) => {
+  const user = auth.currentUser;
 
-    if (!user) {
-      navigate("/login", { state: { doctor } });
-    } else {
+  if (!user) {
+    navigate("/login", { state: { doctor } });
+    return;
+  }
+
+  const userDoc = await getDoc(doc(db, "users", user.uid));
+
+  if (userDoc.exists()) {
+    const data = userDoc.data();
+
+    if (data.role === "User") {
       navigate("/booking", { state: { doctor } });
+    } else {
+      navigate("/login");
     }
-  };
-
+  }
+};
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-slate-100 bg-white">

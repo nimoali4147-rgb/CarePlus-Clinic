@@ -36,7 +36,7 @@ function SignUp() {
       if (role === "Doctor") {
         navigate("/dashboard");
       } else {
-        navigate("/login", { state: { doctor } });
+        navigate("/booking", { state: { doctor } });
       }
     } catch (err) {
       setError("Failed to create account. Try again.");

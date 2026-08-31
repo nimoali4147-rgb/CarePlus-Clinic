@@ -1,32 +1,39 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "../lib/firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { adminAuth } from "../lib/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
-import { 
-  UserRound, 
-  HeartPulse, 
-  Calendar, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
-  Trash2, 
-  LayoutDashboard, 
-  CalendarCheck, 
-  User, 
-  LogOut,
-  UserPlus,
-  CheckCheck,
-  CalendarDays
+import {
+    UserRound,
+    HeartPulse,
+    Calendar,
+    Clock,
+    CheckCircle2,
+    XCircle,
+    Trash2,
+    LayoutDashboard,
+    CalendarCheck,
+    User,
+    LogOut,
+    UserPlus,
+    CheckCheck,
+    CalendarDays
 } from "lucide-react";
 
 function DoctorDashboard() {
     const [appointments, setAppointments] = useState([]);
     const [doctorName, setDoctorName] = useState("");
 
-    const todayStr = new Date().toISOString().split("T")[0];
+    const today = new Date();
+
+    const todayStr =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(today.getDate()).padStart(2, "0");
 
     useEffect(() => {
-        const unsub = onAuthStateChanged(auth, (usr) => {
+        const unsub = onAuthStateChanged(adminAuth, (usr) => {
             if (usr?.email) {
                 const name = usr.email.split("@")[0];
                 setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
@@ -56,6 +63,11 @@ function DoctorDashboard() {
         setAppointments(updated);
     };
 
+    const handleLogout = async () => {
+        await signOut(adminAuth);
+        navigate("/");
+    };
+
     const todayCount = appointments.filter((item) => item.date === todayStr).length;
     const newReqCount = appointments.filter((item) => item.status === "Pending" || item.status === "New Request").length;
     const completedCount = appointments.filter((item) => item.status === "Completed").length;
@@ -82,14 +94,14 @@ function DoctorDashboard() {
                                     <span>Dashboard</span>
                                 </Link>
                             </li>
-                    
+
                             <li>
                                 <Link to="/schedule" className="flex items-center gap-3 rounded-xl px-4 py-3 text-white">
                                     <Clock className="h-5 w-5" />
                                     <span>Schedule</span>
                                 </Link>
                             </li>
-                        
+
                         </ul>
                     </nav>
                 </div>
@@ -105,7 +117,7 @@ function DoctorDashboard() {
             <main className="flex-1 p-8">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                    
+
                         <h1 className="mt-1 text-2xl font-bold text-sky-700">
                             Welcome back, Dr. {doctorName || "Doctor"}! 👋
                         </h1>
@@ -244,25 +256,23 @@ function DoctorDashboard() {
 
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span
-                                                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                                                            item.status === "Completed"
-                                                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                                                : item.status === "Confirmed"
+                                                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${item.status === "Completed"
+                                                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                                            : item.status === "Confirmed"
                                                                 ? "bg-blue-50 text-blue-700 border border-blue-200"
                                                                 : item.status === "Cancelled"
-                                                                ? "bg-rose-50 text-rose-700 border border-rose-200"
-                                                                : "bg-amber-50 text-amber-700 border border-amber-200"
-                                                        }`}
+                                                                    ? "bg-rose-50 text-rose-700 border border-rose-200"
+                                                                    : "bg-amber-50 text-amber-700 border border-amber-200"
+                                                            }`}
                                                     >
-                                                        <span className={`h-1.5 w-1.5 rounded-full ${
-                                                            item.status === "Completed"
-                                                                ? "bg-emerald-500"
-                                                                : item.status === "Confirmed" 
-                                                                ? "bg-blue-500" 
-                                                                : item.status === "Cancelled" 
-                                                                ? "bg-rose-500" 
-                                                                : "bg-amber-500"
-                                                        }`} />
+                                                        <span className={`h-1.5 w-1.5 rounded-full ${item.status === "Completed"
+                                                            ? "bg-emerald-500"
+                                                            : item.status === "Confirmed"
+                                                                ? "bg-blue-500"
+                                                                : item.status === "Cancelled"
+                                                                    ? "bg-rose-500"
+                                                                    : "bg-amber-500"
+                                                            }`} />
                                                         {item.status}
                                                     </span>
                                                 </td>
