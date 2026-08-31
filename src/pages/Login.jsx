@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { auth, adminAuth } from "../lib/firebase";
 import { HeartPulse } from "lucide-react";
 
 function Login() {
@@ -15,26 +15,35 @@ function Login() {
   const location = useLocation();
   const doctor = location.state?.doctor;
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    try {
-      setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+  try {
+    setLoading(true);
 
-      if (role === "Doctor" || role === "Admin") {
-        navigate("/dashboard");
-      } else {
-        navigate("/booking", { state: { doctor } });
-      }
-    } catch (err) {
-      setError("Wrong Email or Password");
-    } finally {
-      setLoading(false);
+    const selectedAuth =
+      role === "Admin" || role === "Doctor"
+        ? adminAuth
+        : auth;
+
+    await signInWithEmailAndPassword(
+      selectedAuth,
+      email,
+      password
+    );
+
+    if (role === "Doctor" || role === "Admin") {
+      navigate("/dashboard");
+    } else {
+      navigate("/booking", { state: { doctor } });
     }
-  };
-
+  } catch (err) {
+    setError("Wrong Email or Password");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-xl md:flex">
@@ -106,7 +115,7 @@ function Login() {
                 className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900 outline-none focus:border-sky-600 focus:ring-0"
               >
                 <option value="User">User</option>
-                <option value="Doctor">Admin</option>
+                <option value="Admin">Admin</option>
               </select>
             </div>
 
