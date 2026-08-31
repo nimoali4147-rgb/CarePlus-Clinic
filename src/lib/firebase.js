@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -12,9 +11,10 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-
-// Initialize only if it hasn't been initialized yet
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 export const db = getFirestore(app);
-export const auth = getAuth(app); 
+export const auth = getAuth(app);
+
+const adminApp = initializeApp(firebaseConfig, "adminApp");
+export const adminAuth = getAuth(adminApp);
