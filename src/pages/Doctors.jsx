@@ -3,7 +3,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react"; 
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
-
+import phy from "../assets/photos/phy.png";
+import sar from "../assets/photos/sar.png";
+import moh from "../assets/photos/moh.png";
+import der from "../assets/photos/der.png";
+import neu from "../assets/photos/neu.png";
+import gyn from "../assets/photos/gyn.png";
+import sur from "../assets/photos/sur.png";
+import op from "../assets/photos/op.png";
 function Doctors() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -15,56 +22,56 @@ function Doctors() {
       specialty: "General Physician",
       experience: "8+ years experience",
       availability: "Available Today",
-      image: "/src/assets/photos/phy.png",
+      image: phy,
     },
     {
       name: "Dr. Sarah Ali",
       specialty: "Pediatrician",
       experience: "6+ years experience",
       availability: "Available Today",
-      image: "/src/assets/photos/sar.png",
+      image: sar,
     },
     {
       name: "Dr. Mohamed Yusuf",
       specialty: "Cardiologist",
       experience: "10+ years experience",
       availability: "Available Tomorrow",
-      image: "/src/assets/photos/moh.png",
+      image: moh,
     },
     {
       name: "Dr. Yussuf Abdullahi",
       specialty: "Dermatologist",
       experience: "7+ years experience",
       availability: "Available Today",
-      image: "/src/assets/photos/der.png",
+      image: der,
     },
     {
       name: "Dr. Ibrahim Noor",
       specialty: "Neurologist",
       experience: "12+ years experience",
       availability: "Available Tomorrow",
-      image: "/src/assets/photos/neu.png",
+      image: neu,
     },
     {
       name: "Dr. Layla Hassan",
       specialty: "Gynecologist",
       experience: "9+ years experience",
       availability: "Available Today",
-      image: "/src/assets/photos/gyn.png",
+      image: gyn,
     },
     {
       name: "Dr. Omar Farah",
       specialty: "Orthopedic Surgeon",
       experience: "11+ years experience",
       availability: "Available This Week",
-      image: "/src/assets/photos/sur.png",
+      image: sur,
     },
     {
       name: "Dr. Hawa Mohamed",
       specialty: "Ophthalmologist",
       experience: "5+ years experience",
       availability: "Available Friday",
-      image: "/src/assets/photos/op.png",
+      image: op,
     },
   ];
 

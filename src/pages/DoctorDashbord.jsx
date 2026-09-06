@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { adminAuth } from "../lib/firebase";
+import { adminAuth, db } from "../lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
 import {
@@ -11,8 +12,6 @@ import {
     XCircle,
     Trash2,
     LayoutDashboard,
-    CalendarCheck,
-    User,
     LogOut,
     UserPlus,
     CheckCheck,
@@ -31,17 +30,23 @@ function DoctorDashboard() {
         String(today.getMonth() + 1).padStart(2, "0") +
         "-" +
         String(today.getDate()).padStart(2, "0");
-
     useEffect(() => {
-        const unsub = onAuthStateChanged(adminAuth, (usr) => {
-            if (usr?.email) {
-                const name = usr.email.split("@")[0];
-                setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+        const unsub = onAuthStateChanged(adminAuth, async (user) => {
+            if (user) {
+            const emailName = user.email ? user.email.split("@")[0] : "Doctor";
+        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
+
+                const ref = doc(db, "doctors", user.uid);
+                const snap = await getDoc(ref);
+
+                if (snap.exists() && snap.data().name) {
+                    setDoctorName(snap.data().name);
+                }
             }
         });
+
         return () => unsub();
     }, []);
-
     useEffect(() => {
         const data = JSON.parse(localStorage.getItem("appointments")) || [];
         setAppointments(data);
@@ -75,7 +80,7 @@ function DoctorDashboard() {
 
     return (
         <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
-            <aside className="w-64 bg-sky-800  border-r border-slate-200 p-6 flex flex-col justify-between">
+            <aside className="w-64 bg-sky-800 border-r border-slate-200 p-6 flex flex-col justify-between">
                 <div>
                     <div className="flex items-center gap-3 mb-8 px-2">
                         <div className="p-2 bg-sky-100 rounded-xl">
@@ -101,7 +106,6 @@ function DoctorDashboard() {
                                     <span>Schedule</span>
                                 </Link>
                             </li>
-
                         </ul>
                     </nav>
                 </div>
@@ -117,9 +121,8 @@ function DoctorDashboard() {
             <main className="flex-1 p-8">
                 <div className="flex items-center justify-between mb-8">
                     <div>
-
                         <h1 className="mt-1 text-2xl font-bold text-sky-700">
-                            Welcome back, Dr. {doctorName || "Doctor"}! 👋
+                            Welcome back, {doctorName || "Doctor"}! 👋
                         </h1>
                     </div>
 
@@ -129,7 +132,7 @@ function DoctorDashboard() {
                         </div>
                         <div>
                             <p className="text-sm font-semibold text-sky-800 leading-none">
-                                Dr. {doctorName}
+                                {doctorName}
                             </p>
                             <p className="text-xs text-sky-700 mt-1">
                                 Medical Specialist

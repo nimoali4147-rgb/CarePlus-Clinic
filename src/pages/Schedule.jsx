@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { auth, db } from "../lib/firebase";
+import { adminAuth, db } from "../lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { Link } from "react-router-dom";
@@ -32,7 +32,7 @@ function Schedule() {
   const [doctorSpecialty, setDoctorSpecialty] = useState("General Specialist");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
       if (user) {
         const emailName = user.email ? user.email.split("@")[0] : "Doctor";
         setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
@@ -84,7 +84,7 @@ function Schedule() {
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-800">
-      {/* Sidebar */}
+ 
       <aside className="w-64  bg-sky-800 text-white p-6 flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-3 mb-8">
