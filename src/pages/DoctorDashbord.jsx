@@ -30,23 +30,28 @@ function DoctorDashboard() {
         String(today.getMonth() + 1).padStart(2, "0") +
         "-" +
         String(today.getDate()).padStart(2, "0");
-    useEffect(() => {
-        const unsub = onAuthStateChanged(adminAuth, async (user) => {
-            if (user) {
-            const emailName = user.email ? user.email.split("@")[0] : "Doctor";
-        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
+    if (!user) return;
 
-                const ref = doc(db, "doctors", user.uid);
-                const snap = await getDoc(ref);
+    try {
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const email = snap.exists() ? snap.data().email : user.email;
+      const name = snap.exists() && snap.data().name 
+        ? snap.data().name 
+        : email ? email.split("@")[0] : "Doctor";
 
-                if (snap.exists() && snap.data().name) {
-                    setDoctorName(snap.data().name);
-                }
-            }
-        });
+      setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+    } catch {
+      if (user.email) {
+        const name = user.email.split("@")[0];
+        setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+      }
+    }
+  });
 
-        return () => unsub();
-    }, []);
+  return () => unsubscribe();
+}, []);
     useEffect(() => {
         const data = JSON.parse(localStorage.getItem("appointments")) || [];
         setAppointments(data);
