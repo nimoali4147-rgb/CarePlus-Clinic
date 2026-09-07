@@ -36,24 +36,17 @@ useEffect(() => {
     if (!user) return;
 
     try {
-      const userSnap = await getDoc(doc(db, "users", user.uid));
+      const snap = await getDoc(doc(db, "users", user.uid));
+      const email = snap.exists() ? snap.data().email : user.email;
+      const name = snap.exists() && snap.data().name 
+        ? snap.data().name 
+        : email ? email.split("@")[0] : "Doctor";
 
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        if (data.name) {
-          setDoctorName(data.name);
-        } else if (data.email) {
-          const emailName = data.email.split("@")[0];
-          setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
-        }
-      } else if (user.email) {
-        const emailName = user.email.split("@")[0];
-        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
-      }
-    } catch (error) {
+      setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+    } catch {
       if (user.email) {
-        const emailName = user.email.split("@")[0];
-        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
+        const name = user.email.split("@")[0];
+        setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
       }
     }
   });

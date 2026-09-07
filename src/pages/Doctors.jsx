@@ -86,6 +86,7 @@ function Doctors() {
 
     return matchesSearch && matchesSpecialty;
   });
+  
 const handleBooking = async (doctor) => {
   localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
 
