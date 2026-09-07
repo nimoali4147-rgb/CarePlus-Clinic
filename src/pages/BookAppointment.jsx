@@ -7,14 +7,14 @@ function BookAppointment() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const doctor = location.state?.doctor || {
+  const doctor = location.state?.doctor ||
+    JSON.parse(localStorage.getItem("selectedDoctor")) || {
     name: "Doctor",
     specialty: "General",
-    image: ""
+    image: "",
   };
 
   const [isConfirmed, setIsConfirmed] = useState(false);
-
   const [formData, setFormData] = useState({
     date: "",
     time: "",
@@ -30,42 +30,42 @@ function BookAppointment() {
     });
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  const user = auth.currentUser;
+    const user = auth.currentUser;
 
-  if (!user) {
-    alert("Please login before booking an appointment.");
-    navigate("/login", { state: { doctor } });
-    return;
-  }
+    if (!user) {
+      alert("Please login before booking an appointment.");
+      navigate("/login", { state: { doctor } });
+      return;
+    }
 
-  const appointment = {
-    id: Date.now(),
-    userId: user.uid,
-    doctor: doctor.name,
-    specialty: doctor.specialty,
-    date: formData.date,
-    time: formData.time,
-    reason: formData.reason,
-    patientName: formData.patientName,
-    phone: formData.phone,
-    status: "Pending",
+    const appointment = {
+      id: Date.now(),
+      userId: user.uid,
+      doctor: doctor.name,
+      specialty: doctor.specialty,
+      date: formData.date,
+      time: formData.time,
+      reason: formData.reason,
+      patientName: formData.patientName,
+      phone: formData.phone,
+      status: "Pending",
+    };
+
+    const oldAppointments =
+      JSON.parse(localStorage.getItem("appointments")) || [];
+
+    const newAppointments = [...oldAppointments, appointment];
+
+    localStorage.setItem(
+      "appointments",
+      JSON.stringify(newAppointments)
+    );
+
+    setIsConfirmed(true);
   };
-
-  const oldAppointments =
-    JSON.parse(localStorage.getItem("appointments")) || [];
-
-  const newAppointments = [...oldAppointments, appointment];
-
-  localStorage.setItem(
-    "appointments",
-    JSON.stringify(newAppointments)
-  );
-
-  setIsConfirmed(true);
-};
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">

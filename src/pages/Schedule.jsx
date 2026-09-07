@@ -31,32 +31,35 @@ function Schedule() {
   const [doctorName, setDoctorName] = useState("");
   const [doctorSpecialty, setDoctorSpecialty] = useState("General Specialist");
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
-      if (user) {
-        const emailName = user.email ? user.email.split("@")[0] : "Doctor";
-        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
+    if (!user) return;
 
-        try {
-          const docRef = doc(db, "doctors", user.uid);
-          const docSnap = await getDoc(docRef);
+    try {
+      const userSnap = await getDoc(doc(db, "users", user.uid));
 
-          if (docSnap.exists() && docSnap.data().specialty) {
-            setDoctorSpecialty(docSnap.data().specialty);
-            if (docSnap.data().name) {
-              setDoctorName(docSnap.data().name);
-            }
-          } else {
-            const localRole = localStorage.getItem("doctorSpecialty");
-            if (localRole) setDoctorSpecialty(localRole);
-          }
-        } catch (error) {
-          console.error("Error fetching doctor role:", error);
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        if (data.name) {
+          setDoctorName(data.name);
+        } else if (data.email) {
+          const emailName = data.email.split("@")[0];
+          setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
         }
+      } else if (user.email) {
+        const emailName = user.email.split("@")[0];
+        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
       }
-    });
-    return () => unsubscribe();
-  }, []);
+    } catch (error) {
+      if (user.email) {
+        const emailName = user.email.split("@")[0];
+        setDoctorName(emailName.charAt(0).toUpperCase() + emailName.slice(1));
+      }
+    }
+  });
+
+  return () => unsubscribe();
+}, []);
 
   const toggleAvailability = (id) => {
     setSchedule((prevSchedule) =>

@@ -86,8 +86,9 @@ function Doctors() {
 
     return matchesSearch && matchesSpecialty;
   });
-
 const handleBooking = async (doctor) => {
+  localStorage.setItem("selectedDoctor", JSON.stringify(doctor));
+
   const user = auth.currentUser;
 
   if (!user) {
@@ -96,15 +97,12 @@ const handleBooking = async (doctor) => {
   }
 
   const userDoc = await getDoc(doc(db, "users", user.uid));
+  const isNormalUser = !userDoc.exists() || userDoc.data().role === "User";
 
-  if (userDoc.exists()) {
-    const data = userDoc.data();
-
-    if (data.role === "User") {
-      navigate("/booking", { state: { doctor } });
-    } else {
-      navigate("/login");
-    }
+  if (isNormalUser) {
+    navigate("/booking", { state: { doctor } });
+  } else {
+    navigate("/login");
   }
 };
   return (
