@@ -31,28 +31,28 @@ function Schedule() {
   const [doctorName, setDoctorName] = useState("");
   const [doctorSpecialty, setDoctorSpecialty] = useState("General Specialist");
 
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
-    if (!user) return;
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(adminAuth, async (user) => {
+      if (!user) return;
 
-    try {
-      const snap = await getDoc(doc(db, "users", user.uid));
-      const email = snap.exists() ? snap.data().email : user.email;
-      const name = snap.exists() && snap.data().name 
-        ? snap.data().name 
-        : email ? email.split("@")[0] : "Doctor";
+      try {
+        const snap = await getDoc(doc(db, "users", user.uid));
+        const email = snap.exists() ? snap.data().email : user.email;
+        const name = snap.exists() && snap.data().name 
+          ? snap.data().name 
+          : email ? email.split("@")[0] : "Doctor";
 
-      setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
-    } catch {
-      if (user.email) {
-        const name = user.email.split("@")[0];
         setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+      } catch {
+        if (user.email) {
+          const name = user.email.split("@")[0];
+          setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+        }
       }
-    }
-  });
+    });
 
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, []);
 
   const toggleAvailability = (id) => {
     setSchedule((prevSchedule) =>
@@ -80,8 +80,8 @@ useEffect(() => {
 
   return (
     <div className="flex min-h-screen bg-gray-100 text-gray-800">
- 
-      <aside className="w-64  bg-sky-800 text-white p-6 flex flex-col justify-between">
+
+      <aside className="w-64 bg-sky-800 text-white p-6 flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-3 mb-8">
             <HeartPulse className="h-6 w-6 text-sky-200" />
@@ -103,7 +103,7 @@ useEffect(() => {
 
       {/* Main Content */}
       <main className="flex-1 p-8">
-     
+
         <div className="flex items-center justify-between mb-8">
           <div>
             <span className="inline-flex items-center gap-1 text-xs font-bold bg-sky-100 text-sky-800 px-3 py-1 rounded-full">
@@ -114,18 +114,8 @@ useEffect(() => {
               My Schedule
             </h1>
           </div>
-
-          <div className="flex items-center gap-3 bg-white p-2 px-4 rounded-full border shadow-sm">
-            <div className="w-8 h-8 rounded-full bg-sky-100 text-sky-800 flex items-center justify-center font-bold">
-              {doctorName ? doctorName.charAt(0) : "D"}
-            </div>
-            <p className="text-sm font-bold text-sky-800">
-              Dr. {doctorName || "Doctor"}
-            </p>
-          </div>
         </div>
 
-     
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg border shadow-sm flex items-center gap-4">
             <CalendarDays className="h-6 w-6 text-sky-600" />
@@ -146,7 +136,6 @@ useEffect(() => {
           </div>
         </div>
 
-        
         <div className="bg-white rounded-lg border shadow-sm p-6">
           <div className="flex items-center justify-between mb-4 pb-4 border-b">
             <h2 className="text-lg font-bold text-sky-800">Weekly Schedule Settings</h2>
@@ -161,7 +150,7 @@ useEffect(() => {
 
           <div className="space-y-4">
             {schedule.map((item) => {
-            
+
               const rowBackground = item.available ? "bg-white" : "bg-gray-50";
               const statusColor = item.available ? "text-emerald-600" : "text-gray-400";
               const statusText = item.available ? "Available" : "Unavailable";
