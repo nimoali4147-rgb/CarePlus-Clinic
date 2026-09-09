@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,10 +12,19 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// Primary Firebase App (Active user session)
+export const app = !getApps().some((a) => a.name === "[DEFAULT]")
+  ? initializeApp(firebaseConfig)
+  : getApp();
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const functions = getFunctions(app);
 
-const adminApp = initializeApp(firebaseConfig, "adminApp");
-export const adminAuth = getAuth(adminApp);
+// Secondary Firebase App (Used for isolated admin-managed account creation without hijacking admin session)
+const secondaryApp = !getApps().some((a) => a.name === "secondaryAuthApp")
+  ? initializeApp(firebaseConfig, "secondaryAuthApp")
+  : getApp("secondaryAuthApp");
+
+export const secondaryAuth = getAuth(secondaryApp);
+

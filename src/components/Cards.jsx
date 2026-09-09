@@ -36,11 +36,11 @@ function Cards() {
             />
 
             <h3 className="text-base font-bold text-[#102A43]">
-              Easy Booking
+              Easy Appointments
             </h3>
 
             <p className="mt-2 text-sm leading-5 text-gray-500">
-              Book your appointment in just a few clicks.
+              Schedule your appointment in just a few clicks.
             </p>
           </div>
 

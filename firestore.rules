@@ -1,0 +1,115 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && getUserRole() == 'admin';
+    }
+
+    function isDoctor() {
+      return isAuthenticated() && getUserRole() == 'doctor';
+    }
+
+    function isPatient() {
+      return isAuthenticated() && (getUserRole() == 'patient' || getUserRole() == 'user');
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      // Allow user to read own document; Admin can read all users
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Allow Admin to create accounts (e.g. Doctors), and Patients to self-register
+      allow create: if isAdmin() || (
+        isAuthenticated() 
+        && request.auth.uid == userId
+        && request.resource.data.role == 'patient'
+        && request.resource.data.status == 'active'
+      );
+
+      // Updates: Owner can update personal contact details, but CANNOT change role!
+      // Admin can update any user
+      allow update: if isAdmin() || (
+        isOwner(userId) 
+        && request.resource.data.role == resource.data.role
+      );
+
+      // Only Admin can delete users
+      allow delete: if isAdmin();
+    }
+
+    // 2. Doctors Collection
+    match /doctors/{doctorId} {
+      // Publicly readable for doctor directory & booking
+      allow read: if true;
+
+      // Only Admin or Cloud Functions can create doctors
+      allow create: if isAdmin();
+
+      // Updates: Admin can update all fields; Doctor can update bio, phone, image, and availability
+      allow update: if isAdmin() || (
+        isOwner(doctorId) && isDoctor()
+      );
+
+      // Only Admin can delete doctors
+      allow delete: if isAdmin();
+    }
+
+    // 3. Appointments Collection
+    match /appointments/{appointmentId} {
+      // Read: Admin can read all; Patient can read own; Doctor can read assigned
+      allow read: if isAdmin() 
+        || (isAuthenticated() && (resource.data.patientId == request.auth.uid || resource.data.userId == request.auth.uid))
+        || (isAuthenticated() && resource.data.doctorId == request.auth.uid);
+
+      // Create: Authenticated patient can create own appointment as pending
+      allow create: if isAuthenticated() && (
+        isAdmin() || (
+          request.resource.data.patientId == request.auth.uid
+          && request.resource.data.status == 'pending'
+        )
+      );
+
+      // Update:
+      // - Admin has full update authority (Approve, Reject, Complete, Reschedule)
+      // - Patient can only cancel their own pending/approved appointment
+      // - Doctor can mark assigned appointment as completed
+      allow update: if isAdmin() || (
+        isAuthenticated() 
+        && resource.data.patientId == request.auth.uid 
+        && request.resource.data.status == 'cancelled'
+      ) || (
+        isAuthenticated()
+        && resource.data.doctorId == request.auth.uid
+        && request.resource.data.status == 'completed'
+      );
+
+      // Delete: Only Admin
+      allow delete: if isAdmin();
+    }
+
+    // 4. Clinic Settings & Availability
+    match /clinicSettings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /doctorAvailability/{docId} {
+      allow read: if true;
+      allow write: if isAdmin() || (isAuthenticated() && isDoctor() && request.auth.uid == docId);
+    }
+  }
+}

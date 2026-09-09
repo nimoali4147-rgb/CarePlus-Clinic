@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CarePlus — Database Reset</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #dc2626;
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 520px;
+      width: 100%;
+    }
+    h1 { font-size: 1.4rem; font-weight: 800; color: #f87171; margin-bottom: 6px; }
+    p.sub { font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px; }
+    .info-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+    .info-box strong { color: #e2e8f0; }
+    .admin-box {
+      background: #064e3b;
+      border: 1px solid #065f46;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 0.8rem;
+      color: #6ee7b7;
+      margin-bottom: 20px;
+    }
+    .admin-box p { margin-bottom: 4px; }
+    input {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: white;
+      font-family: monospace;
+      margin-bottom: 14px;
+      outline: none;
+    }
+    input:focus { border-color: #dc2626; }
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+    #resetBtn {
+      background: #dc2626;
+      color: white;
+    }
+    #resetBtn:hover:not(:disabled) { background: #b91c1c; }
+    #resetBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .log {
+      margin-top: 20px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+    }
+    .log .line { padding: 2px 0; }
+    .log .ok   { color: #34d399; }
+    .log .err  { color: #f87171; }
+    .log .info { color: #60a5fa; }
+    .success-box {
+      margin-top: 20px;
+      background: #064e3b;
+      border: 1px solid #065f46;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      display: none;
+    }
+    .success-box h2 { color: #34d399; font-size: 1.1rem; margin-bottom: 6px; }
+    .success-box p { color: #6ee7b7; font-size: 0.82rem; }
+    label { display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; margin-bottom: 6px; }
+    label span { color: #f87171; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h1>⚠️ Database Reset Tool</h1>
+  <p class="sub">CarePlus Clinic — Full wipe & single admin restore</p>
+
+  <div class="info-box">
+    <strong>Will be deleted:</strong><br>
+    🗑 All documents in <code>users</code><br>
+    🗑 All documents in <code>doctors</code><br>
+    🗑 All documents in <code>appointments</code><br>
+    🗑 All documents in <code>notifications</code>
+  </div>
+
+  <div class="admin-box">
+    <p><strong>Admin account that will remain:</strong></p>
+    <p>📧 Email: <strong>admin@clinic.com</strong></p>
+    <p>🔑 Password: <strong>Admin123456</strong></p>
+  </div>
+
+  <label>Type <span>RESET</span> to confirm:</label>
+  <input type="text" id="confirmInput" placeholder="Type RESET here" />
+
+  <button id="resetBtn" disabled>🗑 Wipe Everything & Keep Admin</button>
+
+  <div class="log" id="logBox"></div>
+  <div class="success-box" id="successBox">
+    <h2>✅ Reset Complete!</h2>
+    <p>Login with <strong>admin@clinic.com</strong> / <strong>Admin123456</strong></p>
+  </div>
+</div>
+
+<!-- Firebase SDK from CDN -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, writeBatch, doc, setDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+  import {
+    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword
+  } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPppKrO5YXM9b9PAsWEpVDKKM76MD4iRw",
+    authDomain: "careplus-clinic-ccee5.firebaseapp.com",
+    projectId: "careplus-clinic-ccee5",
+    storageBucket: "careplus-clinic-ccee5.firebasestorage.app",
+    messagingSenderId: "798067907597",
+    appId: "1:798067907597:web:45e293adfed97798520944",
+  };
+
+  const ADMIN_EMAIL    = "admin@clinic.com";
+  const ADMIN_PASSWORD = "Admin123456";
+  const COLLECTIONS    = ["users", "doctors", "appointments", "notifications"];
+
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  const confirmInput = document.getElementById("confirmInput");
+  const resetBtn     = document.getElementById("resetBtn");
+  const logBox       = document.getElementById("logBox");
+  const successBox   = document.getElementById("successBox");
+
+  confirmInput.addEventListener("input", () => {
+    resetBtn.disabled = confirmInput.value.trim() !== "RESET";
+  });
+
+  function log(msg, type = "info") {
+    logBox.style.display = "block";
+    const line = document.createElement("div");
+    line.className = `line ${type}`;
+    line.textContent = msg;
+    logBox.appendChild(line);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  async function wipeCollection(name) {
+    const snap = await getDocs(collection(db, name));
+    if (snap.empty) { log(`  [skip] "${name}" already empty`, "info"); return 0; }
+    let batch = writeBatch(db);
+    let count = 0, total = 0;
+    for (const d of snap.docs) {
+      batch.delete(d.ref);
+      count++; total++;
+      if (count === 499) { await batch.commit(); batch = writeBatch(db); count = 0; }
+    }
+    if (count > 0) await batch.commit();
+    log(`  ✅ Deleted ${total} doc(s) from "${name}"`, "ok");
+    return total;
+  }
+
+  resetBtn.addEventListener("click", async () => {
+    if (confirmInput.value.trim() !== "RESET") return;
+    resetBtn.disabled = true;
+    resetBtn.textContent = "⏳ Running...";
+    logBox.style.display = "block";
+    successBox.style.display = "none";
+
+    try {
+      // Step 1 — Sign in as current admin first to get credentials
+      log("🔐 Signing in to authenticate...", "info");
+      let adminCred;
+      try {
+        adminCred = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+        log(`  ✅ Signed in. UID: ${adminCred.user.uid}`, "ok");
+      } catch (e) {
+        log(`  ℹ️  Not signed in yet, will create fresh account.`, "info");
+        adminCred = null;
+      }
+
+      // Step 2 — Wipe all collections
+      log("", "info");
+      log("📦 Wiping Firestore collections...", "info");
+      for (const col of COLLECTIONS) {
+        await wipeCollection(col);
+      }
+      log("", "info");
+      log("✅ All Firestore data cleared!", "ok");
+
+      // Step 3 — Get/create admin UID
+      let adminUid;
+      if (adminCred) {
+        adminUid = adminCred.user.uid;
+      } else {
+        log("", "info");
+        log("👤 Creating admin Auth account...", "info");
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+          adminUid = cred.user.uid;
+          log(`  ✅ Auth user created. UID: ${adminUid}`, "ok");
+        } catch (err) {
+          if (err.code === "auth/email-already-in-use") {
+            const cred = await signInWithEmailAndPassword(auth, ADMIN_EMAIL, ADMIN_PASSWORD);
+            adminUid = cred.user.uid;
+            log(`  ✅ Existing UID: ${adminUid}`, "ok");
+          } else throw err;
+        }
+      }
+
+      // Step 4 — Write admin Firestore profile
+      log("", "info");
+      log("📝 Writing admin profile to Firestore...", "info");
+      await setDoc(doc(db, "users", adminUid), {
+        uid:       adminUid,
+        fullName:  "Super Admin",
+        email:     ADMIN_EMAIL,
+        role:      "admin",
+        status:    "active",
+        image:     "",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      log(`  ✅ Admin profile saved → users/${adminUid}`, "ok");
+
+      log("", "info");
+      log("🎉 DATABASE RESET COMPLETE!", "ok");
+
+      successBox.style.display = "block";
+      resetBtn.textContent = "✅ Done";
+
+    } catch (err) {
+      log("", "err");
+      log("❌ Error: " + err.message, "err");
+      resetBtn.disabled = false;
+      resetBtn.textContent = "🗑 Wipe Everything & Keep Admin";
+    }
+  });
+</script>
+</body>
+</html>
